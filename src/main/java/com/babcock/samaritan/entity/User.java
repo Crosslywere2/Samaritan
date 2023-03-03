@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -18,7 +19,8 @@ public class User {
     @Id
     private String id;
     @NotBlank(message = "Password required")
-    @Column(nullable = false)
+    @Length(min = 8, max = 127)
+    @Column(nullable = false, length = 127)
     private String password;
     @NotBlank(message = "First name required")
     @Column(nullable = false)
