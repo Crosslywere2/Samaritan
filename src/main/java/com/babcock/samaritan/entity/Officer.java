@@ -10,6 +10,6 @@ import javax.persistence.*;
 @Getter
 public class Officer extends User {
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "registered_by_id", nullable = false)
+    @JoinColumn(name = "registered_by_id")
     private Officer registeredBy;
 }

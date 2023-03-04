@@ -17,9 +17,7 @@ import java.util.Date;
 public class StudentItem extends Item {
     @Column(unique = true)
     private String serial;
-    @Column(nullable = false)
     private Date dateRegistered;
-    @Column(nullable = false)
     private Boolean lost = false;
     private Date dateLost;
     private Date dateIn;

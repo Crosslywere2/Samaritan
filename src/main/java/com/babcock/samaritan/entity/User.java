@@ -20,7 +20,7 @@ public class User {
     private String id;
     @NotBlank(message = "Password required")
     @Length(min = 8, max = 127)
-    @Column(nullable = false, length = 127)
+    @Column(nullable = false)
     private String password;
     @NotBlank(message = "First name required")
     @Column(nullable = false)
