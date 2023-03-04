@@ -2,10 +2,7 @@ package com.babcock.samaritan.entity;
 
 import com.babcock.samaritan.model.Color;
 import com.babcock.samaritan.model.Type;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -16,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class Item {
 
     @Id
