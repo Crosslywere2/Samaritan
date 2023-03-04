@@ -2,18 +2,22 @@ package com.babcock.samaritan.entity;
 
 import com.babcock.samaritan.model.Color;
 import com.babcock.samaritan.model.Type;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.Hibernate;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.Objects;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 public class Item {
 
     @Id
@@ -42,4 +46,17 @@ public class Item {
     @NotBlank
     @Column(nullable = false)
     private String typeStr;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Item item = (Item) o;
+        return getId() != null && Objects.equals(getId(), item.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
