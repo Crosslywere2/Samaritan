@@ -5,6 +5,10 @@ import com.babcock.samaritan.entity.Student;
 import com.babcock.samaritan.entity.StudentItem;
 import com.babcock.samaritan.entity.Token;
 import com.babcock.samaritan.entity.User;
+import com.babcock.samaritan.error.InvalidItemOwnerException;
+import com.babcock.samaritan.error.InvalidLoginCredentialsException;
+import com.babcock.samaritan.error.ItemNotFoundException;
+import com.babcock.samaritan.error.UserNotFoundException;
 import com.babcock.samaritan.model.Color;
 import com.babcock.samaritan.model.LoginCredentials;
 import com.babcock.samaritan.model.Role;
@@ -46,31 +50,28 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Token loginStudent(LoginCredentials credentials) {
+    public Token loginStudent(LoginCredentials credentials) throws InvalidLoginCredentialsException {
         Optional<Student> student = studentRepo.findById(credentials.getUserId());
         if (student.isPresent()) {
             if (passwordEncoder.matches(credentials.getPassword(), student.get().getPassword())) {
                 String token = jwtUtil.generateToken(credentials.getUserId());
                 return new Token(token);
             }
-            // TODO Change exception to custom exception
-            throw new RuntimeException("Invalid user id or password");
+            throw new InvalidLoginCredentialsException("Invalid user id or password");
         }
-        // TODO Change exception to custom exception
-        throw new RuntimeException("Invalid user id or password");
+        throw new InvalidLoginCredentialsException("Invalid user id or password");
     }
 
     @Override
-    public StudentDTO getStudentDetails() {
+    public StudentDTO getStudentDetails() throws UserNotFoundException {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
         return new StudentDTO(studentRepo.findById(studentId).orElseThrow(
-            // TODO Change exception to custom exception
-            () -> new RuntimeException("Student with student id " + studentId + " not found")
+            () -> new UserNotFoundException("Student with student id " + studentId + " not found")
         ));
     }
 
     @Override
-    public StudentDTO updateStudentInfo(Student student) {
+    public StudentDTO updateStudentInfo(Student student) throws UserNotFoundException {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
         if (studentRepo.findById(studentId).isPresent()) {
             Student s = studentRepo.findById(studentId).get();
@@ -90,14 +91,13 @@ public class StudentServiceImpl implements StudentService {
                 String encodedPassword = passwordEncoder.encode(student.getPassword());
                 s.setPassword(encodedPassword);
             }
-            studentRepo.save(s);
+            return new StudentDTO(studentRepo.save(s));
         }
-        // TODO Change exception to custom exception
-        throw new RuntimeException("Student with student id " + studentId + " not found");
+        throw new UserNotFoundException("Student with student id " + studentId + " not found");
     }
 
     @Override
-    public StudentDTO registerItem(StudentItem item) {
+    public StudentDTO registerItem(StudentItem item) throws UserNotFoundException {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<Student> studentRes;
         if ((studentRes = studentRepo.findById(studentId)).isPresent()) {
@@ -117,8 +117,7 @@ public class StudentServiceImpl implements StudentService {
             s.getItems().add(i);
             return new StudentDTO(studentRepo.save(s));
         }
-        // TODO Change exception to custom exception
-        throw new RuntimeException("Student id could not be determined");
+        throw new UserNotFoundException("Student id could not be determined");
     }
 
     @Override
@@ -128,11 +127,10 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDTO updateItem(Long itemId, StudentItem studentItem) {
+    public StudentDTO updateItem(Long itemId, StudentItem studentItem) throws ItemNotFoundException, UserNotFoundException, InvalidItemOwnerException {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
-        // TODO Change exception to custom exception
-        StudentItem item = studentItemRepo.findById(itemId).orElseThrow(() -> new RuntimeException("Item does not exist"));
-        Student student = studentRepo.findById(studentId).orElseThrow(() -> new RuntimeException("Student id could not be determined"));
+        StudentItem item = studentItemRepo.findById(itemId).orElseThrow(() -> new ItemNotFoundException("Item does not exist"));
+        Student student = studentRepo.findById(studentId).orElseThrow(() -> new UserNotFoundException("Student id could not be determined"));
         if (student.getItems().contains(item)) {
             int i = student.getItems().indexOf(item);
             if (Objects.nonNull(studentItem.getLost())) {
@@ -163,25 +161,21 @@ public class StudentServiceImpl implements StudentService {
             student.getItems().remove(i);
             student.getItems().add(i, studentItemRepo.save(item));
             return new StudentDTO(student);
-        } else {
-            // TODO Change exception to custom exception
-            throw new RuntimeException("Item does not belong to this student");
         }
+        throw new InvalidItemOwnerException("Item does not belong to this student");
     }
 
     @Override
-    public StudentDTO deleteItem(Long itemId) {
+    public StudentDTO deleteItem(Long itemId) throws ItemNotFoundException, UserNotFoundException, InvalidItemOwnerException {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
-        // TODO Change exception to custom exception
-        StudentItem item = studentItemRepo.findById(itemId).orElseThrow(() -> new RuntimeException("Item does not exist"));
-        Student student = studentRepo.findById(studentId).orElseThrow(() -> new RuntimeException("Student id could not be determined"));
+        StudentItem item = studentItemRepo.findById(itemId).orElseThrow(() -> new ItemNotFoundException("Item does not exist"));
+        Student student = studentRepo.findById(studentId).orElseThrow(() -> new UserNotFoundException("Student id could not be determined"));
         int i;
         if ((i = student.getItems().indexOf(item)) >= 0) {
             studentItemRepo.deleteById(itemId);
             student.getItems().remove(i);
             return new StudentDTO(student);
         }
-        // TODO Change exception to custom exception
-        throw new RuntimeException("Item does not belong to this student");
+        throw new InvalidItemOwnerException("Item does not belong to this student");
     }
 }
