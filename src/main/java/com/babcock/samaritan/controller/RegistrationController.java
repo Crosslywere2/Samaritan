@@ -1,8 +1,8 @@
 package com.babcock.samaritan.controller;
 
-import com.babcock.samaritan.entity.Officer;
 import com.babcock.samaritan.entity.Student;
 import com.babcock.samaritan.entity.Token;
+import com.babcock.samaritan.error.DataAlreadyExistException;
 import com.babcock.samaritan.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +19,7 @@ public class RegistrationController {
     private StudentService studentService;
 
     @PostMapping("/student")
-    public Token registerStudent(@Valid @RequestBody Student student) {
+    public Token registerStudent(@Valid @RequestBody Student student) throws DataAlreadyExistException {
         return studentService.registerStudent(student);
     }
 

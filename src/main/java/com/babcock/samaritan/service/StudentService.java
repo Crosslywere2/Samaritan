@@ -4,16 +4,13 @@ import com.babcock.samaritan.dto.StudentDTO;
 import com.babcock.samaritan.entity.Student;
 import com.babcock.samaritan.entity.StudentItem;
 import com.babcock.samaritan.entity.Token;
-import com.babcock.samaritan.error.InvalidItemOwnerException;
-import com.babcock.samaritan.error.InvalidLoginCredentialsException;
-import com.babcock.samaritan.error.ItemNotFoundException;
-import com.babcock.samaritan.error.UserNotFoundException;
+import com.babcock.samaritan.error.*;
 import com.babcock.samaritan.model.LoginCredentials;
 
 import java.util.Map;
 
 public interface StudentService {
-    Token registerStudent(Student student);
+    Token registerStudent(Student student) throws DataAlreadyExistException;
 
     Token loginStudent(LoginCredentials credentials) throws InvalidLoginCredentialsException;
 
@@ -25,7 +22,7 @@ public interface StudentService {
 
     Map<String, Object> logoutStudent(String userToken);
 
-    StudentDTO updateItem(Long itemId, StudentItem item) throws ItemNotFoundException, UserNotFoundException, InvalidItemOwnerException;
+    StudentDTO updateItem(Long itemId, StudentItem item) throws ItemNotFoundException, UserNotFoundException, InvalidItemOwnerException, RequiredArgNotFoundException;
 
     StudentDTO deleteItem(Long itemId) throws ItemNotFoundException, UserNotFoundException, InvalidItemOwnerException;
 }

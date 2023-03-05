@@ -1,9 +1,6 @@
 package com.babcock.samaritan.error.handler;
 
-import com.babcock.samaritan.error.InvalidItemOwnerException;
-import com.babcock.samaritan.error.InvalidLoginCredentialsException;
-import com.babcock.samaritan.error.ItemNotFoundException;
-import com.babcock.samaritan.error.UserNotFoundException;
+import com.babcock.samaritan.error.*;
 import com.babcock.samaritan.model.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +34,18 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler(InvalidItemOwnerException.class)
     public ResponseEntity<ErrorMessage> invalidItemOwnerException(InvalidItemOwnerException exception, WebRequest request) {
         ErrorMessage message = new ErrorMessage(HttpStatus.UNAUTHORIZED, exception.getMessage());
+        return ResponseEntity.status(message.getStatus()).body(message);
+    }
+
+    @ExceptionHandler(RequiredArgNotFoundException.class)
+    public ResponseEntity<ErrorMessage> requiredArgNotFoundException(RequiredArgNotFoundException exception, WebRequest request) {
+        ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return ResponseEntity.status(message.getStatus()).body(message);
+    }
+
+    @ExceptionHandler(DataAlreadyExistException.class)
+    public ResponseEntity<ErrorMessage> dataAlreadyExistException(DataAlreadyExistException exception, WebRequest request) {
+        ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST, exception.getMessage());
         return ResponseEntity.status(message.getStatus()).body(message);
     }
 }
