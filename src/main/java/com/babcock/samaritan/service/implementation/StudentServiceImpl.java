@@ -37,14 +37,19 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Token registerStudent(Student student) throws DataAlreadyExistException {
         if (!studentRepo.existsById(student.getId())) {
-            String encoded = passwordEncoder.encode(student.getPassword());
-            student.setPassword(encoded);
-            student.setRole(Role.STUDENT);
-            User user = studentRepo.save(student);
-            String token = jwtUtil.generateToken(user.getId());
-            log.info("Registered Student with ID {}", student.getId());
-            return new Token(token);
+            if (!studentRepo.existsByEmailIgnoreCase(student.getEmail())) {
+                String encoded = passwordEncoder.encode(student.getPassword());
+                student.setPassword(encoded);
+                student.setRole(Role.STUDENT);
+                User user = studentRepo.save(student);
+                String token = jwtUtil.generateToken(user.getId());
+                log.info("Registered Student with ID {}", student.getId());
+                return new Token(token);
+            }
+            log.info("Student with email {} already exists", student.getEmail());
+            throw new DataAlreadyExistException("Email is already taken");
         }
+        log.info("Student with ID {} already exists", student.getId());
         throw new DataAlreadyExistException("Student with student id " + student.getId() + " already exists");
     }
 

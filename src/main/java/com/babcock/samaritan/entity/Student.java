@@ -15,6 +15,6 @@ import java.util.List;
 @Setter
 public class Student extends User {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "owned_by_id", referencedColumnName = "id")
+    @JoinColumn(name = "owned_by", referencedColumnName = "id")
     private List<StudentItem> items;
 }

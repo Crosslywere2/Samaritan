@@ -34,7 +34,7 @@ public class StudentController {
         return studentService.updateStudentInfo(student);
     }
 
-    @PostMapping("/items")
+    @PostMapping("/item")
     public StudentDTO registerItem(@Valid @RequestBody StudentItem item) throws UserNotFoundException {
         return studentService.registerItem(item);
     }

@@ -21,6 +21,7 @@ import java.util.Objects;
 public class Item {
 
     @Id
+    @GeneratedValue
     private Long id;
     @NotBlank(message = "Brand required")
     @Length(max = 255)
@@ -33,13 +34,11 @@ public class Item {
     @Length(max = 300)
     @Column(length = 300)
     private String description;
-    @NotBlank(message = "Color required")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Color color;
     @Column(nullable = false)
     private String colorStr;
-    @NotBlank(message = "Type required")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Type type;
