@@ -34,7 +34,6 @@ public class JWTUtil {
     public String validateTokenAndRetrieveSubject(String token) throws JWTVerificationException {
         if (tokenRepo.existsById(token))
             throw new JWTVerificationException("Token expired");
-
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
                 .withSubject("User Details")
                 .withIssuer("Babcock Samaritan")
@@ -44,9 +43,17 @@ public class JWTUtil {
     }
 
     public boolean invalidateToken(Token token) {
-        if (tokenRepo.findById(token.getToken()).isEmpty()) {
-            tokenRepo.save(token);
-            return true;
+        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
+                .withSubject("User Details")
+                .withIssuer("Babcock Samaritan")
+                .build();
+        if (token.getToken().startsWith("Bearer ")) {
+            token.setToken(token.getToken().substring(7));
+            DecodedJWT decodedJWT = verifier.verify(token.getToken());
+            if (decodedJWT != null) {
+                tokenRepo.save(token);
+                return true;
+            }
         }
         return false;
     }

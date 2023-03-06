@@ -49,9 +49,8 @@ public class StudentController {
         return studentService.deleteItem(itemId);
     }
 
-    // TODO Fix
     @PostMapping("/logout")
-    public Map<String, Object> logoutStudent(@RequestHeader("token") String userToken) throws UserNotFoundException {
+    public Map<String, Object> logoutStudent(@RequestHeader("Authorization") String userToken) throws UserNotFoundException {
         return studentService.logoutStudent(userToken);
     }
 }
