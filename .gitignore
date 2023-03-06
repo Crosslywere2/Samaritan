@@ -23,6 +23,7 @@
 hs_err_pid*
 
 .gitignore
+application.properties
 
 # Spring gitignore
 # Miscellaneous
@@ -55,7 +56,7 @@ buildSrc/build
 spring-test/test-output/
 
 # Maven artifacts
-pom.xml
+#pom.xml
 /target/
 
 # Eclipse artifacts, including WTP generated manifests
