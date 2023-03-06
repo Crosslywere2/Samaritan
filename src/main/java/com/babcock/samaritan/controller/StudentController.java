@@ -39,7 +39,6 @@ public class StudentController {
         return studentService.registerItem(item);
     }
 
-    // TODO Fix
     @PutMapping("/item/{id}")
     public StudentDTO updateItem(@PathVariable("id") Long itemId, @RequestBody StudentItem item) throws UserNotFoundException, ItemNotFoundException, InvalidItemOwnerException, RequiredArgNotFoundException {
         return studentService.updateItem(itemId, item);

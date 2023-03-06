@@ -117,9 +117,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentDTO registerItem(StudentItem item) throws UserNotFoundException, RequiredArgNotFoundException {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<Student> studentRes;
-        if ((studentRes = studentRepo.findById(studentId)).isPresent()) {
-            Student student = studentRes.get();
+        Student student = studentRepo.findById(studentId).orElseThrow(() -> new UserNotFoundException("Student does not exist"));
+        if (Objects.isNull(item.getId())) {
             item.setDateRegistered(new Date());
             if (item.getColor() != Color.OTHER) {
                 item.setColorName(item.getColor().name().toLowerCase());
@@ -139,7 +138,7 @@ public class StudentServiceImpl implements StudentService {
             studentItemRepo.save(item);
             return new StudentDTO(student, studentItemRepo.findByOwnedBy_Id(studentId));
         }
-        log.info("Student with ID {} not found", studentId);
+        log.info("Student with ID {} attempted to register an item with an ID", studentId);
         throw new UserNotFoundException("Student does not exist");
     }
 
