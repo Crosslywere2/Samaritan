@@ -75,11 +75,11 @@ public class StudentServiceImpl implements StudentService {
         Optional<Student> student = studentRepo.findById(studentId);
         if (student.isPresent()) {
             log.info("Retrieved student with ID {}'s data", studentId);
-            return new StudentDTO(student.get());
+            return new StudentDTO(student.get(), studentItemRepo.findByOwnedBy_Id(studentId));
         }
         else {
             log.info("Unable to retrieve student with ID {}'s data", studentId);
-            throw new UserNotFoundException("Student with student id " + studentId + " not found");
+            throw new UserNotFoundException("Student does not exist");
         }
     }
 
@@ -88,120 +88,108 @@ public class StudentServiceImpl implements StudentService {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
         if (studentRepo.findById(studentId).isPresent()) {
             Student s = studentRepo.findById(studentId).get();
-            if (!"".equalsIgnoreCase(student.getFirstName())) {
+            if (Objects.nonNull(student.getFirstName()) && !"".equalsIgnoreCase(student.getFirstName())) {
                 log.info("Student with ID {} changed first name", studentId);
                 s.setFirstName(student.getFirstName());
             }
-            if (!"".equalsIgnoreCase(student.getLastName())) {
+            if (Objects.nonNull(student.getLastName()) && !"".equalsIgnoreCase(student.getLastName())) {
                 log.info("Student with ID {} changed last name", studentId);
                 s.setLastName(student.getLastName());
             }
-            if (!"".equalsIgnoreCase(student.getOtherNames())) {
+            if (Objects.nonNull(student.getOtherNames()) && !"".equalsIgnoreCase(student.getOtherNames())) {
                 log.info("Student with ID {} changed other name", studentId);
                 s.setOtherNames(student.getOtherNames());
             }
-            if (!"".equalsIgnoreCase(student.getEmail())) {
+            if (Objects.nonNull(student.getEmail()) && !"".equalsIgnoreCase(student.getEmail())) {
                 log.info("Student with ID {} changed email", studentId);
                 s.setEmail(student.getEmail());
             }
-            if (!"".equalsIgnoreCase(student.getPassword())) {
+            if (Objects.nonNull(student.getPassword()) && !"".equalsIgnoreCase(student.getPassword())) {
                 log.info("Student with ID {} changed password", studentId);
                 String encodedPassword = passwordEncoder.encode(student.getPassword());
                 s.setPassword(encodedPassword);
             }
-            return new StudentDTO(studentRepo.save(s));
+            return new StudentDTO(studentRepo.save(s), studentItemRepo.findByOwnedBy_Id(studentId));
         }
-        throw new UserNotFoundException("Student with student id " + studentId + " not found");
+        throw new UserNotFoundException("Student does not exist");
     }
 
     @Override
-    public StudentDTO registerItem(StudentItem item) throws UserNotFoundException {
+    public StudentDTO registerItem(StudentItem item) throws UserNotFoundException, RequiredArgNotFoundException {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<Student> studentRes;
         if ((studentRes = studentRepo.findById(studentId)).isPresent()) {
-            Student s = studentRes.get();
+            Student student = studentRes.get();
             item.setDateRegistered(new Date());
-            if (item.getColor() != Color.OTHER)
-                item.setColorStr(item.getColor().name().toLowerCase());
-            else
-                item.setColorStr(item.getColorStr().toLowerCase());
-
-            if (item.getType() != Type.OTHER)
-                item.setTypeStr(item.getType().name().toLowerCase());
-            else
-                item.setTypeStr(item.getTypeStr().toLowerCase());
-
-            StudentItem i = studentItemRepo.save(item);
-            s.getItems().add(i);
-            return new StudentDTO(studentRepo.save(s));
+            if (item.getColor() != Color.OTHER) {
+                item.setColorName(item.getColor().name().toLowerCase());
+            } else if (Objects.nonNull(item.getColorName()) && !"".equalsIgnoreCase(item.getColorName())) {
+                item.setColorName(item.getColorName().toLowerCase());
+            } else {
+                throw new RequiredArgNotFoundException("Color name not present when selecting other as color");
+            }
+            if (item.getType() != Type.OTHER) {
+                item.setTypeName(item.getType().name().toLowerCase());
+            } else if (Objects.nonNull(item.getTypeName()) && !"".equalsIgnoreCase(item.getTypeName())) {
+                item.setTypeName(item.getTypeName().toLowerCase());
+            } else {
+                throw new RequiredArgNotFoundException("Type name not present when selecting other as type");
+            }
+            item.setOwnedBy(student);
+            studentItemRepo.save(item);
+            return new StudentDTO(student, studentItemRepo.findByOwnedBy_Id(studentId));
         }
         log.info("Student with ID {} not found", studentId);
-        throw new UserNotFoundException("Student id could not be determined");
+        throw new UserNotFoundException("Student does not exist");
     }
 
     @Override
-    public Map<String, Object> logoutStudent(String userToken) {
+    public Map<String, Object> logoutStudent(String userToken) throws UserNotFoundException {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info("Logged out Student with ID {}", studentId);
-        SecurityContextHolder.clearContext();
-        return Collections.singletonMap("success", jwtUtil.invalidateToken(new Token(userToken)));
+        if (jwtUtil.invalidateToken(new Token(userToken))) {
+            log.info("Logged out Student with ID {}", studentId);
+            SecurityContextHolder.clearContext();
+            return Collections.singletonMap("success", true);
+        } else {
+            throw new UserNotFoundException("Could not sign out student");
+        }
     }
 
     @Override
-    public StudentDTO updateItem(Long itemId, StudentItem studentItem) throws ItemNotFoundException, UserNotFoundException, InvalidItemOwnerException, RequiredArgNotFoundException {
+    public StudentDTO updateItem(Long itemId, StudentItem modifiedItem) throws ItemNotFoundException, UserNotFoundException, InvalidItemOwnerException, RequiredArgNotFoundException {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
         StudentItem item = studentItemRepo.findById(itemId).orElseThrow(() -> new ItemNotFoundException("Item does not exist"));
-        Student student = studentRepo.findById(studentId).orElseThrow(() -> new UserNotFoundException("Student id could not be determined"));
-        int i;
-        if ((i = student.getItems().indexOf(item)) >= 0) {
-            if (Objects.nonNull(studentItem.getLost())) {
-                item.setLost(studentItem.getLost());
-                if (studentItem.getLost()) {
+        Student student = studentRepo.findById(studentId).orElseThrow(() -> new UserNotFoundException("Student does not exist"));
+        if (studentItemRepo.findByOwnedBy_Id(studentId).contains(item)) {
+            if (Objects.nonNull(modifiedItem.getLost())) {
+                item.setLost(modifiedItem.getLost());
+                if (item.getLost()) {
                     log.info("Student with ID {} lost item with ID {}", studentId, itemId);
                     item.setDateLost(new Date());
-                }
-                else {
+                } else {
                     log.info("Student with ID {} found item with ID {}", studentId, itemId);
                     item.setDateLost(null);
                 }
             }
-            if (Objects.nonNull(studentItem.getDescription())) {
+            if (Objects.nonNull(modifiedItem.getDescription())) {
                 log.info("Student with ID {} updated item with ID {} description", studentId, itemId);
-                item.setDescription(studentItem.getDescription());
+                item.setDescription(modifiedItem.getDescription());
             }
-            if (Objects.nonNull(studentItem.getColor())) {
-                item.setColor(studentItem.getColor());
-                if (studentItem.getColor() != Color.OTHER) {
-                    log.info("Student with ID {} changed color of item with ID {}", studentId, itemId);
-                    item.setColorStr(studentItem.getColor().name().toLowerCase());
-                }
-                else if (!"".equalsIgnoreCase(studentItem.getColorStr())) {
-                    log.info("Student with ID {} changed color name of item with ID {}", studentId, itemId);
-                    item.setColorStr(studentItem.getColorStr().toLowerCase());
+            if (Objects.nonNull(modifiedItem.getColor())) {
+                item.setColor(modifiedItem.getColor());
+                if (item.getColor() != Color.OTHER) {
+                    item.setColorName(item.getColor().name().toLowerCase());
+                } else if (Objects.nonNull(modifiedItem.getColorName()) && !"".equalsIgnoreCase(modifiedItem.getColorName())) {
+                    item.setColorName(modifiedItem.getColorName().toLowerCase());
                 } else {
-                    log.info("Student with ID {} attempted to change color of item with ID {} to other without providing color name", studentId, itemId);
-                    throw new RequiredArgNotFoundException("Color name not provided");
+                    throw new RequiredArgNotFoundException("Color name not specified when color is other");
                 }
             }
-            if (Objects.nonNull(studentItem.getDateIn())) {
-                if (!Objects.nonNull(item.getDateIn())) {
-                    log.info("Student with ID {} updated item with ID {} in-date", studentId, itemId);
-                    item.setDateIn(studentItem.getDateIn());
-                } else {
-                    log.info("Student with ID {} failed to update item with ID {} in-date", studentId, itemId);
-                }
+            if (Objects.nonNull(modifiedItem.getDateIn())) {
+                item.setDateIn(modifiedItem.getDateIn());
             }
-            if (Objects.nonNull(studentItem.getDateOut())) {
-                 if (Objects.nonNull(item.getDateIn()) && !Objects.nonNull(item.getDateOut())) {
-                     log.info("Student with ID {} updated item with ID {} out-date", studentId, itemId);
-                     item.setDateOut(studentItem.getDateOut());
-                 } else {
-                     log.info("Student with ID {} failed to updated item with ID {} out-date", studentId, itemId);
-                 }
-            }
-            student.getItems().remove(i);
-            student.getItems().add(studentItemRepo.save(item));
-            return new StudentDTO(student);
+            studentItemRepo.save(item);
+            return new StudentDTO(student, studentItemRepo.findByOwnedBy_Id(studentId));
         }
         log.error("Student with ID {} tried to modify item not owned", studentId);
         throw new InvalidItemOwnerException("Item does not belong to this student");
@@ -211,13 +199,11 @@ public class StudentServiceImpl implements StudentService {
     public StudentDTO deleteItem(Long itemId) throws ItemNotFoundException, UserNotFoundException, InvalidItemOwnerException {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
         StudentItem item = studentItemRepo.findById(itemId).orElseThrow(() -> new ItemNotFoundException("Item does not exist"));
-        Student student = studentRepo.findById(studentId).orElseThrow(() -> new UserNotFoundException("Student id could not be determined"));
-        int i;
-        if ((i = student.getItems().indexOf(item)) >= 0) {
+        Student student = studentRepo.findById(studentId).orElseThrow(() -> new UserNotFoundException("Student does not exist"));
+        if (studentItemRepo.findByOwnedBy_Id(studentId).contains(item)) {
             log.info("Student with ID {} deleted item", studentId);
             studentItemRepo.deleteById(itemId);
-            student.getItems().remove(i);
-            return new StudentDTO(student);
+            return new StudentDTO(student, studentItemRepo.findByOwnedBy_Id(studentId));
         }
         log.info("Student with ID {} tried to delete item not owned", studentId);
         throw new InvalidItemOwnerException("Item does not belong to this student");

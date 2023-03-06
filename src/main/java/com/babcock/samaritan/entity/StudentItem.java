@@ -8,6 +8,8 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.util.Date;
 import java.util.Objects;
 
@@ -24,6 +26,9 @@ public class StudentItem extends Item {
     private Date dateLost;
     private Date dateIn;
     private Date dateOut;
+    @ManyToOne
+    @JoinColumn
+    private Student ownedBy;
 
     @Override
     public boolean equals(Object o) {

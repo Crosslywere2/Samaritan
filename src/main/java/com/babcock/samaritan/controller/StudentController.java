@@ -35,10 +35,11 @@ public class StudentController {
     }
 
     @PostMapping("/item")
-    public StudentDTO registerItem(@Valid @RequestBody StudentItem item) throws UserNotFoundException {
+    public StudentDTO registerItem(@Valid @RequestBody StudentItem item) throws UserNotFoundException, RequiredArgNotFoundException {
         return studentService.registerItem(item);
     }
 
+    // TODO Fix
     @PutMapping("/item/{id}")
     public StudentDTO updateItem(@PathVariable("id") Long itemId, @RequestBody StudentItem item) throws UserNotFoundException, ItemNotFoundException, InvalidItemOwnerException, RequiredArgNotFoundException {
         return studentService.updateItem(itemId, item);
@@ -49,8 +50,9 @@ public class StudentController {
         return studentService.deleteItem(itemId);
     }
 
+    // TODO Fix
     @PostMapping("/logout")
-    public Map<String, Object> logoutStudent(@RequestHeader("token") String userToken) {
+    public Map<String, Object> logoutStudent(@RequestHeader("token") String userToken) throws UserNotFoundException {
         return studentService.logoutStudent(userToken);
     }
 }

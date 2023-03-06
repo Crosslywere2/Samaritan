@@ -17,7 +17,7 @@ public class FoundItem extends Item {
     private String foundBy;
     private Date dateFound;
     private String retrievedBy;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owned_by")
-    private Student ownedBy;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn
+    private Student claimedBy;
 }

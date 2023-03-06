@@ -38,13 +38,13 @@ public class Item {
     @Column(nullable = false)
     private Color color;
     @Column(nullable = false)
-    private String colorStr;
+    private String colorName;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Type type;
     @NotBlank
     @Column(nullable = false)
-    private String typeStr;
+    private String typeName;
 
     @Override
     public boolean equals(Object o) {

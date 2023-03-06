@@ -18,9 +18,9 @@ public interface StudentService {
 
     StudentDTO updateStudentInfo(Student student) throws UserNotFoundException;
 
-    StudentDTO registerItem(StudentItem item) throws UserNotFoundException;
+    StudentDTO registerItem(StudentItem item) throws UserNotFoundException, RequiredArgNotFoundException;
 
-    Map<String, Object> logoutStudent(String userToken);
+    Map<String, Object> logoutStudent(String userToken) throws UserNotFoundException;
 
     StudentDTO updateItem(Long itemId, StudentItem item) throws ItemNotFoundException, UserNotFoundException, InvalidItemOwnerException, RequiredArgNotFoundException;
 
