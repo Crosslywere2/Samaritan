@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Entity
@@ -32,6 +33,7 @@ public class User {
     @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
     private Role role;
+    @Email
     @NotBlank(message = "Email required")
     @Column(nullable = false, unique = true)
     private String email;
