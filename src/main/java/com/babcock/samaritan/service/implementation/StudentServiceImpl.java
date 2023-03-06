@@ -176,17 +176,24 @@ public class StudentServiceImpl implements StudentService {
                 item.setDescription(modifiedItem.getDescription());
             }
             if (Objects.nonNull(modifiedItem.getColor())) {
+                log.info("Student with ID {} changed color of item with ID {}", studentId, itemId);
                 item.setColor(modifiedItem.getColor());
                 if (item.getColor() != Color.OTHER) {
                     item.setColorName(item.getColor().name().toLowerCase());
                 } else if (Objects.nonNull(modifiedItem.getColorName()) && !"".equalsIgnoreCase(modifiedItem.getColorName())) {
                     item.setColorName(modifiedItem.getColorName().toLowerCase());
                 } else {
+                    log.info("Student with ID {} attempted to change color to 'OTHER' for item without providing color name", studentId);
                     throw new RequiredArgNotFoundException("Color name not specified when color is other");
                 }
             }
-            if (Objects.nonNull(modifiedItem.getDateIn())) {
+            if (Objects.nonNull(modifiedItem.getDateIn()) && item.getDateIn() == null) {
+                log.info("Student with ID {} set date in of item with ID {}", studentId, itemId);
                 item.setDateIn(modifiedItem.getDateIn());
+            }
+            if (Objects.nonNull(modifiedItem.getDateOut()) && Objects.nonNull(item.getDateIn()) && item.getDateOut() == null) {
+                log.info("Student with ID {} set date out of item with ID {}", studentId, itemId);
+                item.setDateOut(modifiedItem.getDateOut());
             }
             studentItemRepo.save(item);
             return new StudentDTO(student, studentItemRepo.findByOwnedBy_Id(studentId));
