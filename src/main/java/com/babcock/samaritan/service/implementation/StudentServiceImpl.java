@@ -44,7 +44,7 @@ public class StudentServiceImpl implements StudentService {
                 User user = studentRepo.save(student);
                 String token = jwtUtil.generateToken(user.getId());
                 log.info("Registered Student with ID {}", student.getId());
-                return new Token(token);
+                return new Token(token, student.getId());
             }
             log.info("Student with email {} already exists", student.getEmail());
             throw new DataAlreadyExistException("Email is already taken");
@@ -60,7 +60,7 @@ public class StudentServiceImpl implements StudentService {
             if (passwordEncoder.matches(credentials.getPassword(), student.get().getPassword())) {
                 log.info("Logged in Student with ID {}", credentials.getUserId());
                 String token = jwtUtil.generateToken(credentials.getUserId());
-                return new Token(token);
+                return new Token(token, credentials.getUserId());
             }
             log.info("Login attempt failed for student with ID {}", credentials.getUserId());
             throw new InvalidLoginCredentialsException("Invalid user id or password");
@@ -145,7 +145,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Map<String, Object> logoutStudent(String userToken) throws UserNotFoundException {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (jwtUtil.invalidateToken(new Token(userToken))) {
+        if (jwtUtil.invalidateToken(new Token(userToken, studentId))) {
             log.info("Logged out Student with ID {}", studentId);
             SecurityContextHolder.clearContext();
             return Collections.singletonMap("success", true);
