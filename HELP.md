@@ -11,7 +11,7 @@ For further reference, please consider the following sections:
 * [Spring Security](https://docs.spring.io/spring-boot/docs/2.7.9/reference/htmlsingle/#web.security)
 * [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/2.7.9/reference/htmlsingle/#using.devtools)
 * [Validation](https://docs.spring.io/spring-boot/docs/2.7.9/reference/htmlsingle/#io.validation)
-* [OAuth2 Client](https://docs.spring.io/spring-boot/docs/2.7.9/reference/htmlsingle/#web.security.oauth2.client)
+* [Vaadin](https://vaadin.com/docs)
 
 ### Guides
 The following guides illustrate how to use some features concretely:
@@ -25,4 +25,5 @@ The following guides illustrate how to use some features concretely:
 * [Spring Boot and OAuth2](https://spring.io/guides/tutorials/spring-boot-oauth2/)
 * [Authenticating a User with LDAP](https://spring.io/guides/gs/authenticating-ldap/)
 * [Validation](https://spring.io/guides/gs/validating-form-input/)
+* [Creating CRUD UI with Vaadin](https://spring.io/guides/gs/crud-with-vaadin/)
 
