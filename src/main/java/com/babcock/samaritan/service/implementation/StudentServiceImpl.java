@@ -120,13 +120,6 @@ public class StudentServiceImpl implements StudentService {
         Student student = studentRepo.findById(studentId).orElseThrow(() -> new UserNotFoundException("Student does not exist"));
         if (Objects.isNull(item.getId())) {
             item.setDateRegistered(new Date());
-            if (item.getColor() != Color.OTHER) {
-                item.setColorName(item.getColor().name().toLowerCase());
-            } else if (Objects.nonNull(item.getColorName()) && !"".equalsIgnoreCase(item.getColorName())) {
-                item.setColorName(item.getColorName().toLowerCase());
-            } else {
-                throw new RequiredArgNotFoundException("Color name not present when selecting other as color");
-            }
             if (item.getType() != Type.OTHER) {
                 item.setTypeName(item.getType().name().toLowerCase());
             } else if (Objects.nonNull(item.getTypeName()) && !"".equalsIgnoreCase(item.getTypeName())) {
@@ -177,14 +170,6 @@ public class StudentServiceImpl implements StudentService {
             if (Objects.nonNull(modifiedItem.getColor())) {
                 log.info("Student with ID {} changed color of item with ID {}", studentId, itemId);
                 item.setColor(modifiedItem.getColor());
-                if (item.getColor() != Color.OTHER) {
-                    item.setColorName(item.getColor().name().toLowerCase());
-                } else if (Objects.nonNull(modifiedItem.getColorName()) && !"".equalsIgnoreCase(modifiedItem.getColorName())) {
-                    item.setColorName(modifiedItem.getColorName().toLowerCase());
-                } else {
-                    log.info("Student with ID {} attempted to change color to 'OTHER' for item without providing color name", studentId);
-                    throw new RequiredArgNotFoundException("Color name not specified when color is other");
-                }
             }
             if (Objects.nonNull(modifiedItem.getDateIn()) && item.getDateIn() == null) {
                 log.info("Student with ID {} set date in of item with ID {}", studentId, itemId);

@@ -14,7 +14,6 @@ public class StudentItemDTO {
     private String model;
     private String description;
     private Color color;
-    private String colorName;
     private Type type;
     private String typeName;
     private String serial;
@@ -31,7 +30,6 @@ public class StudentItemDTO {
         description = studentItem.getDescription();
         serial = studentItem.getSerial();
         color = studentItem.getColor();
-        colorName = studentItem.getColorName();
         type = studentItem.getType();
         typeName = studentItem.getTypeName();
         dateRegistered = studentItem.getDateRegistered();

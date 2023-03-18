@@ -14,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -37,8 +38,6 @@ public class Item {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Color color;
-    @Column(nullable = false)
-    private String colorName;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Type type;
