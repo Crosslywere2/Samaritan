@@ -40,7 +40,7 @@ public class StudentServiceImpl implements StudentService {
             if (!studentRepo.existsByEmailIgnoreCase(student.getEmail())) {
                 String encoded = passwordEncoder.encode(student.getPassword());
                 student.setPassword(encoded);
-                student.setRole(Role.STUDENT);
+//                student.setRole(Role.STUDENT);
                 User user = studentRepo.save(student);
                 String token = jwtUtil.generateToken(user.getId());
                 log.info("Registered Student with ID {}", student.getId());
