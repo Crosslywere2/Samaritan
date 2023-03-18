@@ -1,5 +1,6 @@
 package com.babcock.samaritan.entity;
 
+import com.babcock.samaritan.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,9 +14,6 @@ import java.util.Objects;
 @Getter
 @Setter
 public class Student extends User {
-//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "owned_by", referencedColumnName = "id")
-//    private List<StudentItem> items;
 
     @Override
     public boolean equals(Object o) {
@@ -28,5 +26,10 @@ public class Student extends User {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    @Override
+    public Role getRole() {
+        return Role.STUDENT;
     }
 }

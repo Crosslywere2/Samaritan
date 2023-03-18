@@ -12,11 +12,12 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class User {
+public abstract class User {
     @Id
     private String id;
     @NotBlank(message = "Password required")
@@ -30,11 +31,9 @@ public class User {
     @Column(nullable = false)
     private String lastName;
     private String otherNames;
-    @Enumerated(EnumType.ORDINAL)
-    @Column(nullable = false)
-    private Role role;
     @Email
     @NotBlank(message = "Email required")
     @Column(nullable = false, unique = true)
     private String email;
+    public abstract Role getRole();
 }
