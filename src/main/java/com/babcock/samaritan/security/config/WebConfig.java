@@ -34,7 +34,7 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
             .cors()
             .and()
             .authorizeHttpRequests()
-                .antMatchers("/api/register/student", "/api/student/login", "/api/officer/login", "/api/found/**").permitAll()
+                .antMatchers("/api/register/student", "/api/student/login", "/api/officer/login", "/api/found").permitAll()
                 .antMatchers("/api/student/item/**", "/api/student/info").hasAuthority(Role.STUDENT.name())
                 .antMatchers("/api/officer/**").hasAnyAuthority(Role.OFFICER.name(), Role.ADMIN_OFFICER.name())
                 .antMatchers("/api/admin/**", "/api/register/officer").hasAuthority(Role.ADMIN_OFFICER.name())
