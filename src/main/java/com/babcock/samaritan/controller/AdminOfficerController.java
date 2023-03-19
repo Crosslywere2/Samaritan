@@ -13,7 +13,7 @@ public class AdminOfficerController {
     @Autowired
     private final OfficerService officerService;
 
-    @GetMapping
+    @GetMapping("/info")
     public AdminOfficerDTO fetchAdminOfficerInfo() {
         return officerService.getAdminOfficerInfo();
     }

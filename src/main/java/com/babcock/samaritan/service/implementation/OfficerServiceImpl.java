@@ -55,7 +55,7 @@ public class OfficerServiceImpl implements OfficerService {
             }
             throw new DataAlreadyExistException("Email is already taken");
         }
-        throw new DataAlreadyExistException("Officer with student id " + officer.getId() + " already exists");
+        throw new DataAlreadyExistException("Officer with user id " + officer.getId() + " already exists");
     }
 
     @Override
@@ -138,7 +138,14 @@ public class OfficerServiceImpl implements OfficerService {
         String adminId = SecurityContextHolder.getContext().getAuthentication().getName();
         Officer officer = officerRepo.findById(officerId).orElseThrow(() -> new UsernameNotFoundException("Officer not found"));
         if (officer.getRegisteredBy().getId().equalsIgnoreCase(adminId) && !officer.getId().equalsIgnoreCase(adminId)) {
-            officerRepo.deleteById(officerId);
+            Officer admin = officer.getRegisteredBy();
+            officer.setRegisteredBy(null);
+            List<Officer> officers = officerRepo.findByRegisteredBy_IdIgnoreCase(officerId);
+            for (Officer o : officers) {
+                o.setRegisteredBy(admin);
+                officerRepo.save(o);
+            }
+            officerRepo.delete(officer);
         }
         return new AdminOfficerDTO(
                 officerRepo.findById(adminId).orElseThrow(() -> new UsernameNotFoundException("Officer not found")),
