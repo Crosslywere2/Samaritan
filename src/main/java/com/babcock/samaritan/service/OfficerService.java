@@ -25,4 +25,6 @@ public interface OfficerService {
     Map<String, Object> registerFoundItem(FoundItem foundItem);
 
     Map<String, Object> logoutOfficer(String userToken);
+
+    AdminOfficerDTO getAdminOfficerInfo();
 }

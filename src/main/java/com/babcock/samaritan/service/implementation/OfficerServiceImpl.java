@@ -18,6 +18,7 @@ import com.babcock.samaritan.service.OfficerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -117,5 +118,14 @@ public class OfficerServiceImpl implements OfficerService {
     public Map<String, Object> logoutOfficer(String userToken) {
         String officerId = SecurityContextHolder.getContext().getAuthentication().getName();
         return Collections.singletonMap("success", jwtUtil.invalidateToken(new Token(userToken, officerId)));
+    }
+
+    @Override
+    public AdminOfficerDTO getAdminOfficerInfo() {
+        String officerId = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new AdminOfficerDTO(
+                officerRepo.findById(officerId).orElseThrow(() -> new UsernameNotFoundException("Officer not found")),
+                officerRepo.findByRegisteredBy_IdIgnoreCase(officerId)
+        );
     }
 }
