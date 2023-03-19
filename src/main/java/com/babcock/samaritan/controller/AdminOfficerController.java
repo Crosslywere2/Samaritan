@@ -2,16 +2,20 @@ package com.babcock.samaritan.controller;
 
 import com.babcock.samaritan.dto.AdminOfficerDTO;
 import com.babcock.samaritan.service.OfficerService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin")
+@RequiredArgsConstructor
 public class AdminOfficerController {
     @Autowired
-    private OfficerService officerService;
+    private final OfficerService officerService;
 
+    @GetMapping
     public AdminOfficerDTO fetchAdminOfficerInfo() {
         return officerService.getAdminOfficerInfo();
     }
