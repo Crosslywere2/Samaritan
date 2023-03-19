@@ -7,8 +7,10 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "expired_tokens")
 @Getter
 @Setter
 @NoArgsConstructor
