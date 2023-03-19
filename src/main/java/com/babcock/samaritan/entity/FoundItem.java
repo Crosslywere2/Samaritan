@@ -14,7 +14,9 @@ import java.util.Date;
 @Getter
 @Setter
 public class FoundItem extends Item {
-    private String foundBy;
+    @ManyToOne
+    @JoinColumn(name = "found_by_id")
+    private User foundBy;
     private Date dateFound;
     private String retrievedBy;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

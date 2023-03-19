@@ -105,11 +105,15 @@ public class OfficerServiceImpl implements OfficerService {
             }
             return new OfficerDTO(officerRepo.save(o));
         }
-        throw new RuntimeException("");
+        throw new RuntimeException("User does not exist");
     }
 
     @Override
     public Map<String, Object> registerFoundItem(FoundItem foundItem) {
+        if (foundItem.getFoundBy() == null) {
+            String officerId = SecurityContextHolder.getContext().getAuthentication().getName();
+            foundItem.setFoundBy(officerRepo.findById(officerId).orElseThrow(() -> new UsernameNotFoundException("Officer not found")));
+        }
         foundItem.setDateFound(new Date());
         return Collections.singletonMap("success", true);
     }
