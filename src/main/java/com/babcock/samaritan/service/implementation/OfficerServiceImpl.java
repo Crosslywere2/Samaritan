@@ -132,4 +132,17 @@ public class OfficerServiceImpl implements OfficerService {
                 officerRepo.findByRegisteredBy_IdIgnoreCase(officerId)
         );
     }
+
+    @Override
+    public AdminOfficerDTO deleteOfficer(String officerId) {
+        String adminId = SecurityContextHolder.getContext().getAuthentication().getName();
+        Officer officer = officerRepo.findById(officerId).orElseThrow(() -> new UsernameNotFoundException("Officer not found"));
+        if (officer.getRegisteredBy().getId().equalsIgnoreCase(adminId) && !officer.getId().equalsIgnoreCase(adminId)) {
+            officerRepo.deleteById(officerId);
+        }
+        return new AdminOfficerDTO(
+                officerRepo.findById(adminId).orElseThrow(() -> new UsernameNotFoundException("Officer not found")),
+                officerRepo.findByRegisteredBy_IdIgnoreCase(adminId)
+        );
+    }
 }

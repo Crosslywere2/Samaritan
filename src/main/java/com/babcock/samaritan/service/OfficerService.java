@@ -27,4 +27,6 @@ public interface OfficerService {
     Map<String, Object> logoutOfficer(String userToken);
 
     AdminOfficerDTO getAdminOfficerInfo();
+
+    AdminOfficerDTO deleteOfficer(String officerId);
 }
