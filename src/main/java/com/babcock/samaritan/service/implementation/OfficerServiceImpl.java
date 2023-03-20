@@ -140,10 +140,8 @@ public class OfficerServiceImpl implements OfficerService {
             Officer admin = officer.getRegisteredBy();
             officer.setRegisteredBy(null);
             List<Officer> officers = officerRepo.findByRegisteredBy_IdIgnoreCase(officerId);
-            for (Officer o : officers) {
-                o.setRegisteredBy(admin);
-                officerRepo.save(o);
-            }
+            officers.forEach(o -> o.setRegisteredBy(admin));
+            officerRepo.saveAll(officers);
             officerRepo.delete(officer);
         }
         return new AdminOfficerDTO(
