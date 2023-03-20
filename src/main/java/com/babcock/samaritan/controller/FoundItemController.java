@@ -1,6 +1,6 @@
 package com.babcock.samaritan.controller;
 
-import com.babcock.samaritan.entity.FoundItem;
+import com.babcock.samaritan.dto.FoundItemDTO;
 import com.babcock.samaritan.service.FoundItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +17,7 @@ public class FoundItemController {
     private FoundItemService foundItemService;
 
     @GetMapping
-    public List<FoundItem> fetchAllFoundItems() {
+    public List<FoundItemDTO> fetchAllFoundItems() {
         return foundItemService.fetchAllFoundItems();
     }
 }

@@ -15,7 +15,6 @@ import com.babcock.samaritan.repository.OfficerRepo;
 import com.babcock.samaritan.repository.StudentItemRepo;
 import com.babcock.samaritan.security.JWTUtil;
 import com.babcock.samaritan.service.OfficerService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
