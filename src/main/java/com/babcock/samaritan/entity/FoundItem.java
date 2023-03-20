@@ -18,8 +18,8 @@ public class FoundItem extends Item {
     @JoinColumn(name = "found_by_id")
     private User foundBy;
     private Date dateFound;
-    private String retrievedBy;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn
     private Student claimedBy;
+    private Date dateClaimed;
 }

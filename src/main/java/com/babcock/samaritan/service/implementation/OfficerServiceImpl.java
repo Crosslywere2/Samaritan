@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-@Slf4j
 public class OfficerServiceImpl implements OfficerService {
     @Autowired
     private OfficerRepo officerRepo;
@@ -115,6 +114,7 @@ public class OfficerServiceImpl implements OfficerService {
             foundItem.setFoundBy(officerRepo.findById(officerId).orElseThrow(() -> new UsernameNotFoundException("Officer not found")));
         }
         foundItem.setDateFound(new Date());
+        foundItemRepo.save(foundItem);
         return Collections.singletonMap("success", true);
     }
 
@@ -151,5 +151,25 @@ public class OfficerServiceImpl implements OfficerService {
                 officerRepo.findById(adminId).orElseThrow(() -> new UsernameNotFoundException("Officer not found")),
                 officerRepo.findByRegisteredBy_IdIgnoreCase(adminId)
         );
+    }
+
+    @Override
+    public Map<String, Object> modifyFoundItem(Long foundItemId, FoundItem foundItem) {
+        Optional<FoundItem> foundItemRes = foundItemRepo.findById(foundItemId);
+        if (foundItemRes.isEmpty()) {
+            return Collections.singletonMap("success", false);
+        }
+        FoundItem fi = foundItemRes.get();
+        if (Objects.nonNull(foundItem.getClaimedBy())) {
+            fi.setClaimedBy(foundItem.getClaimedBy());
+            fi.setDateClaimed(new Date());
+        }
+        if (Objects.nonNull(foundItem.getDescription())) {
+            fi.setDescription(foundItem.getDescription());
+        }
+        if (Objects.nonNull(foundItem.getColor())) {
+            fi.setColor(foundItem.getColor());
+        }
+        return Collections.singletonMap("success", foundItemRepo.save(fi) instanceof FoundItem);
     }
 }

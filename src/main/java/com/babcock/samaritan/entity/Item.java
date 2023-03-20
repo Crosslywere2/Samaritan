@@ -41,7 +41,6 @@ public class Item {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Type type;
-    @NotBlank
     @Column(nullable = false)
     private String typeName;
 

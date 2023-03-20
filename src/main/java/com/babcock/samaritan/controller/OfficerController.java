@@ -35,9 +35,14 @@ public class OfficerController {
         return officerService.updateOfficerInfo(officer);
     }
 
-    @PostMapping("/found")
+    @PostMapping("/found-item")
     public Map<String, Object> registerFoundItem(@Valid @RequestBody FoundItem foundItem) {
         return officerService.registerFoundItem(foundItem);
+    }
+
+    @PutMapping("/found-item/{id}")
+    public Map<String, Object> modifyFoundItem(@PathVariable("id") Long foundItemId, @RequestBody FoundItem foundItem) {
+        return officerService.modifyFoundItem(foundItemId, foundItem);
     }
 
     @PostMapping("/logout")

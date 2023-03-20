@@ -29,4 +29,6 @@ public interface OfficerService {
     AdminOfficerDTO getAdminOfficerInfo();
 
     AdminOfficerDTO deleteOfficer(String officerId);
+
+    Map<String, Object> modifyFoundItem(Long foundItemId, FoundItem foundItem);
 }
