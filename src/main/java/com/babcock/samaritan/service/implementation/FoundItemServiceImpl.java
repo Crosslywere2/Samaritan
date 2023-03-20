@@ -18,6 +18,6 @@ public class FoundItemServiceImpl implements FoundItemService {
 
     @Override
     public List<FoundItem> fetchAllFoundItems() {
-        return foundItemRepo.findAll();
+        return foundItemRepo.findByClaimedByNull();
     }
 }
