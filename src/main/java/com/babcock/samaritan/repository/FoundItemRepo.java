@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface FoundItemRepo extends JpaRepository<FoundItem, Long> {
+    List<FoundItem> findByFoundBy_Id(String id);
     List<FoundItem> findByClaimedByNull();
 }

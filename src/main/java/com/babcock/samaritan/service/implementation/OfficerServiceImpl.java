@@ -139,6 +139,9 @@ public class OfficerServiceImpl implements OfficerService {
         if (officer.getRegisteredBy().getId().equalsIgnoreCase(adminId) && !officer.getId().equalsIgnoreCase(adminId)) {
             Officer admin = officer.getRegisteredBy();
             officer.setRegisteredBy(null);
+            List<FoundItem> foundItems = foundItemRepo.findByFoundBy_Id(officerId);
+            foundItems.forEach(i -> i.setFoundBy(null));
+            foundItemRepo.saveAll(foundItems);
             List<Officer> officers = officerRepo.findByRegisteredBy_IdIgnoreCase(officerId);
             officers.forEach(o -> o.setRegisteredBy(admin));
             officerRepo.saveAll(officers);
